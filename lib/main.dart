@@ -4,7 +4,50 @@ void main() {
   runApp(App());
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  var txtPeso = TextEditingController();
+  final txtAltura = TextEditingController();
+  var imagem = 'images/obesidade2.jpg';
+  var imcTexto = '';
+
+  //final = static
+  void calculaImc() {
+    var peso = double.parse(txtPeso.text);
+    var altura = double.parse(txtAltura.text);
+    var imc = peso / (altura * altura);
+    var imcS = imc.toStringAsFixed(2);
+    if (imc < 18.5)
+      setState(() {
+        imagem = 'images/abaixo.jpg';
+        imcTexto = 'Seu imc está abaixo: $imcS';
+      });
+    else if (imc < 24.9)
+      setState(() {
+        imagem = 'images/ideal.jpg';
+        imcTexto = 'Seu imc está normal: $imcS';
+      });
+    else if (imc < 29.9)
+      setState(() {
+        imagem = 'images/excesso.jpg';
+        imcTexto = 'Seu imc está em excesso: $imcS';
+      });
+    else if (imc < 39.9)
+      setState(() {
+        imagem = 'images/obesidade1.jpg';
+        imcTexto = 'Seu imc está muito acima: $imcS';
+      });
+    else
+      setState(() {
+        imagem = 'images/obesidade2.jpg';
+        imcTexto = 'Seu imc está muito acima: $imcS';
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,13 +73,16 @@ class App extends StatelessWidget {
                     Text("Peso"),
                     TextField(
                       keyboardType: TextInputType.number,
+                      controller: txtPeso,
                     ),
                     Text("Altura"),
-                    TextField(),
+                    TextField(
+                      controller: txtAltura,
+                    ),
                     Container(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: calculaImc, // () => calculaImc()
                         child: Text("Calcular"),
                       ),
                     ),
@@ -44,18 +90,33 @@ class App extends StatelessWidget {
                 ),
               ),
             ),
-            Flexible(
+            Expanded(
               flex: 2,
-              child: Container(
-                margin: EdgeInsets.all(10),
-                color: Colors.yellow,
-                child: Image.asset('images/abaixo.jpg'),
+              child: FittedBox(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Image.asset(imagem),
+                      Center(
+                        child: Text(imcTexto),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
   }
 }
 
